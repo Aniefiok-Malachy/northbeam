@@ -22,7 +22,7 @@ export class TransactionsService {
     const account = await this.accounts.findByUserId(userId);
     const signedAmount = dto.type === 'CREDIT' ? dto.amountCents : -dto.amountCents;
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: any) => {
       const transaction = await tx.transaction.create({
         data: {
           accountId: account.id,

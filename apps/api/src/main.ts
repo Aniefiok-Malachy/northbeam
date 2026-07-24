@@ -6,14 +6,27 @@ import compression from 'compression';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  // Debug Railway environment variables
+  console.log('==============================');
+  console.log('Environment Variables');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('PORT:', process.env.PORT);
+  console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+  console.log('JWT_ACCESS_SECRET:', process.env.JWT_ACCESS_SECRET);
+  console.log('JWT_REFRESH_SECRET:', process.env.JWT_REFRESH_SECRET);
+  console.log('WEB_ORIGIN:', process.env.WEB_ORIGIN);
+  console.log('==============================');
+
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
   app.use(compression());
+
   app.enableCors({
-    origin: process.env.WEB_ORIGIN ?? 'http://localhost:3000',
-    credentials: false,
+    origin: process.env.WEB_ORIGIN || 'http://localhost:3000',
+    credentials: true,
   });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -22,15 +35,25 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
+  const swaggerConfig = new DocumentBuilder()
     .setTitle('Northbeam API')
-    .setDescription('Auth, accounts, and transactions for the Northbeam platform')
-    .setVersion('0.1')
+    .setDescription(
+      'Authentication, Accounts, and Transactions API for Northbeam',
+    )
+    .setVersion('1.0.0')
     .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT ?? 4000);
+  const port = Number(process.env.PORT) || 4000;
+
+  await app.listen(port);
+
+  console.log(`🚀 Northbeam API running on port ${port}`);
+  console.log(`📚 Swagger Docs: /docs`);
 }
+
 bootstrap();

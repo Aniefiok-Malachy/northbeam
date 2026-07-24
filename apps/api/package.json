@@ -12,7 +12,7 @@
     "test": "jest"
   },
   "prisma": {
-    "schema": "../../prisma/schema.prisma"
+    "schema": "./prisma/schema.prisma"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.28",

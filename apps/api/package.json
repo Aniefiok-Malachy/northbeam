@@ -1,0 +1,46 @@
+{
+  "name": "@northbeam/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "start": "node dist/main",
+    "start:dev": "nest start --watch",
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "jest"
+  },
+  "prisma": {
+    "schema": "../../prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.28",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.1.28",
+    "@nestjs/jwt": "^11.0.1",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.28",
+    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/throttler": "^6.4.0",
+    "@prisma/client": "^5.19.0",
+    "argon2": "^0.40.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "compression": "^1.8.1",
+    "helmet": "^8.1.0",
+    "mongodb": "^7.5.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.24",
+    "@types/compression": "^1.8.1",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.30",
+    "@types/passport-jwt": "^4.0.1",
+    "prisma": "^5.19.0",
+    "typescript": "^5.5.4"
+  }
+}

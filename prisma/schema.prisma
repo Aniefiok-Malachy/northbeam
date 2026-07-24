@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  role          Role      @default(OWNER)
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  auditLogs     AuditLog[]
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id])
+  refreshToken String   @unique
+  userAgent    String?
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+model Account {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String        @db.ObjectId
+  user          User          @relation(fields: [userId], references: [id])
+  name          String
+  accountNumber String        @unique
+  balanceCents  Int           @default(0)
+  currency      String        @default("USD")
+  createdAt     DateTime      @default(now())
+
+  transactions  Transaction[]
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionStatus {
+  PENDING
+  POSTED
+  FAILED
+}
+
+model Transaction {
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  accountId   String            @db.ObjectId
+  account     Account           @relation(fields: [accountId], references: [id])
+  description String
+  amountCents Int
+  type        TransactionType
+  status      TransactionStatus @default(PENDING)
+  counterparty String?
+  createdAt   DateTime          @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+}

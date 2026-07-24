@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo "try { rs.status() } catch (e) { rs.initiate() }" | mongosh --quiet
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./apps/api
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL=mongodb://mongo:27017/northbeam?replicaSet=rs0
+      - REDIS_URL=redis://redis:6379
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+    depends_on:
+      - mongo
+      - redis
+
+  web:
+    build:
+      context: ./apps/web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+    depends_on:
+      - api
+
+volumes:
+  mongo_data:
